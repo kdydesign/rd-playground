@@ -6,7 +6,7 @@ import router from './router'
 
 import { Quasar } from 'quasar'
 
-// import './assets/main.css'
+import './assets/main.css'
 import 'quasar/dist/quasar.css'
 import 'quasar/dist/quasar.addon.css'
 // import 'quasar/src/css/index.sass'
