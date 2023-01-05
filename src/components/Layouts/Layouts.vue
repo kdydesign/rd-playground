@@ -15,6 +15,13 @@
           </transition>
         </router-view>
       </q-page-container>
+
+      <q-footer class="bg-white text-grey-5">
+        <q-toolbar class="justify-center">
+          <span>Copyright © 2023 Team R46D,
+            <sup style="font-size: 10px">RD</sup>디와</span>
+        </q-toolbar>
+      </q-footer>
     </q-layout>
   </div>
 </template>
