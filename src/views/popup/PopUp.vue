@@ -32,18 +32,12 @@ for (let i of Array(100)
   dataList.push({ seq: i, name: `Test - ${i}`, power: i * 10000000 })
 }
 
-defineExpose({
-  tttttttt
-})
 function onResize (size) {
   tableHeight.value = size.height - 140
 }
 
 watch(show, (value) => {
   isShow.value = value
-
-  nextTick()
-  console.log(tttttttt.value)
 })
 </script>
 
