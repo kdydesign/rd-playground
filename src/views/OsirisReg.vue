@@ -68,7 +68,7 @@ function onOpenList() {
           <div class="rd-container q-pr-md q-pl-md">
             <span class="rd-sub-title float-left">지원 현황</span>
 
-            <table class="q-table">
+            <table class="status-table q-table">
               <colgroup>
                 <col width="auto">
                 <col width="auto">
@@ -94,14 +94,23 @@ function onOpenList() {
                   <td>
                     <a
                       href="#"
+                      style="text-decoration: underline;"
                       @click="onOpenList"
                     >14</a>
                   </td>
                   <td>
-                    <a href="#">18</a>
+                    <a
+                      href="#"
+                      style="text-decoration: underline;"
+                      @click="onOpenList"
+                    >18</a>
                   </td>
                   <td>
-                    <a href="#">21</a>
+                    <a
+                      href="#"
+                      style="text-decoration: underline;"
+                      @click="onOpenList"
+                    >21</a>
                   </td>
                 </tr>
               </tbody>
@@ -120,38 +129,35 @@ function onOpenList() {
   border-radius: 130px
   background: linear-gradient(270deg, #ED0000 4.5%, #B10000 95.5%) !important
 
-.th-head
+.status-table.th-head
   font-size: 18px !important
   color: #fff
 
-.q-table
+.status-table.q-table
   box-shadow: 0px 4px 9px rgb(0 0 0 / 11%)
 
-thead
-  background: linear-gradient(314deg, #ED0000 4.5%, #B10000 95.5%) !important
-  border-radius: 10px
+.status-table
+  thead
+    background: linear-gradient(314deg, #ED0000 4.5%, #B10000 95.5%) !important
+    border-radius: 10px
 
-th, td
-  border-right: 1px
-  border-color: #adadad
-  border-style: solid
-
-th:first-child
-  border-radius: 6px 0 0 0
-
-th:last-child
-  border-radius: 0 6px 0 0
-
-tr:first-child td:first-child
-  border-radius: 0 0 0 6px
-
-tr:last-child td:last-child
-  border-radius: 0 0 6px 0
-
-td a
-  color: #930000
-  font-weight: bold
-  font-size: 16px !important
+.status-table
+  th, td
+    border-right: 1px
+    border-color: #adadad
+    border-style: solid
+  th:first-child
+    border-radius: 6px 0 0 0
+  th:last-child
+    border-radius: 0 6px 0 0
+  tr:first-child td:first-child
+    border-radius: 0 0 0 6px
+  tr:last-child td:last-child
+    border-radius: 0 0 6px 0
+  td a
+    color: #930000
+    font-weight: bold
+    font-size: 16px !important
 
 .rd-sub-title
   font-size: 12px
