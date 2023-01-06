@@ -62,7 +62,7 @@ function onJoinMember() {
           href="#"
           class="float-right q-mt-md q-mr-lg"
           style="text-decoration: none"
-          @click="onJoinMember"
+          @click.stop.prevent="onJoinMember"
         >
           Sign Up
         </a>
@@ -72,8 +72,6 @@ function onJoinMember() {
 </template>
 
 <style lang="sass">
-.page-a-padding
-  padding: 0px 40px
 
 .r-btn
   border-radius: 40px
