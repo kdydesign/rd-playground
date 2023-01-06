@@ -1,13 +1,16 @@
 <script setup>
-import { toRefs, defineProps, ref, watch, onMounted, nextTick } from 'vue'
+import { toRefs, defineProps, ref, watch } from 'vue'
+import { useFirestore, useCollection  } from 'vuefire'
+import { collection } from 'firebase/firestore'
 
+const db = useFirestore()
+const todos = useCollection(collection(db, 'rd-user'))
 const props = defineProps({
   show: {
     type: Boolean,
     default: false
   }
 })
-
 const { show } = toRefs(props)
 const isShow = ref(false)
 const type = ref('RD')
@@ -16,22 +19,19 @@ const pagination = ref({
   rowsPerPage: 0
 })
 const opts = ref(['RD', 'PD', 'YD'])
-
 const columns = [
   { name: 'seq', label: 'No.', field: 'seq', align: 'center' },
   { name: 'name', label: 'Name', field: 'name', align: 'center' },
   { name: 'power', label: 'Power', field: 'power', align: 'center' }
 ]
-
 let dataList = []
-
 for (let i of Array(100)
   .fill(0)
   .map((a, i) => a + (i + 1))) {
   dataList.push({ seq: i, name: `Test - ${i}`, power: i * 10000000 })
 }
 
-function onResize (size) {
+function onResize(size) {
   tableHeight.value = size.height - 140
 }
 
@@ -92,6 +92,10 @@ watch(show, (value) => {
             class="my-sticky-virtscroll-table q-mt-md"
             :style="`height:${tableHeight}px`"
           />
+          
+          <div>
+            {{ todos }}
+          </div>
         </div>
       </q-card-section>
     </q-card>
@@ -112,12 +116,13 @@ watch(show, (value) => {
     position: sticky
     z-index: 1
   /* this will be the loading indicator */
+
   thead tr:last-child th
     /* height of all previous header rows */
     top: 48px
+
   thead tr:first-child th
     top: 0
-
 
 .title-back
   color: #fff
