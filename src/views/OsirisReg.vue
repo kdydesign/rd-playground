@@ -57,7 +57,8 @@ function onOpenList() {
           <q-btn
             size="50px"
             round
-            label="REG"
+            icon="supervised_user_circle"
+            color="white"
             class="r-btn"
             @click="onRegistration"
           />
@@ -141,10 +142,10 @@ th:first-child
 th:last-child
   border-radius: 0 6px 0 0
 
-td:first-child
+tr:first-child td:first-child
   border-radius: 0 0 0 6px
 
-td:last-child
+tr:last-child td:last-child
   border-radius: 0 0 6px 0
 
 td a
