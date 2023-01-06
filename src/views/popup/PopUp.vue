@@ -11,7 +11,7 @@ const props = defineProps({
 const { show } = toRefs(props)
 const isShow = ref(false)
 const type = ref('RD')
-const current = ref(1)
+const tableHeight = ref(void 0)
 const tttttttt = ref(null)
 const pagination = ref({
   rowsPerPage: 0
@@ -35,9 +35,9 @@ for (let i of Array(100)
 defineExpose({
   tttttttt
 })
-
-onMounted(() => {
-})
+function onResize (size) {
+  tableHeight.value = size.height - 140
+}
 
 watch(show, (value) => {
   isShow.value = value
@@ -50,65 +50,58 @@ watch(show, (value) => {
 <template>
   <q-dialog
     v-model="isShow"
+    persistent
+    :maximized="true"
+    transition-show="slide-up"
+    transition-hide="slide-down"
   >
-    <q-layout
-      view="Lhh lpR fff"
-      container
-      class="bg-white"
-      style="max-height: 50vh"
-    >
-      <q-header
-        reveal
-        elevated
-        class="bg-primary"
-      >
-        <q-toolbar>
-          <q-toolbar-title>신청 현황</q-toolbar-title>
-          <q-btn
-            v-close-popup
-            flat
-            round
+    <q-resize-observer @resize="onResize" />
+
+    <q-card>
+      <q-item class="title-back">
+        <q-item-section>
+          <q-item-label style="font-weight: bold">
+            신청 목록
+          </q-item-label>
+        </q-item-section>
+        <q-btn
+          v-close-popup
+          dense
+          flat
+          icon="close"
+          class="float-right"
+        />
+      </q-item>
+
+      <q-separator />
+
+      <q-card-section class="column">
+        <div class="col">
+          <q-select
+            v-model="type"
+            outlined
             dense
-            icon="close"
+            :options="opts"
+            style="width: 80px"
           />
-        </q-toolbar>
-      </q-header>
+        </div>
 
-      <q-page-container ref="tttttttt">
-        <q-page
-          padding
-        >
-          <div class="q-pa-xs">
-            <div class="row">
-              <div class="col">
-                <q-select
-                  v-model="type"
-                  outlined
-                  dense
-                  :options="opts"
-                  style="width: 80px"
-                />
-              </div>
-            </div>
-
-            <div class="q-mt-md">
-              <q-table
-                v-model:pagination="pagination"
-                :virtual-scroll-sticky-size-start="48"
-                :rows="dataList"
-                :columns="columns"
-                row-key="seq"
-                virtual-scroll
-                hide-bottom
-                :rows-per-page-options="[0]"
-                style="max-height: 34vh"
-                class="my-sticky-virtscroll-table"
-              />
-            </div>
-          </div>
-        </q-page>
-      </q-page-container>
-    </q-layout>
+        <div class="col">
+          <q-table
+            v-model:pagination="pagination"
+            :virtual-scroll-sticky-size-start="48"
+            :rows="dataList"
+            :columns="columns"
+            row-key="seq"
+            virtual-scroll
+            hide-bottom
+            :rows-per-page-options="[0]"
+            class="my-sticky-virtscroll-table q-mt-md"
+            :style="`height:${tableHeight}px`"
+          />
+        </div>
+      </q-card-section>
+    </q-card>
   </q-dialog>
 </template>
 
@@ -131,4 +124,9 @@ watch(show, (value) => {
     top: 48px
   thead tr:first-child th
     top: 0
+
+
+.title-back
+  color: #fff
+  background: linear-gradient(270deg, #ED0000 4.5%, #B10000 95.5%) !important
 </style>
