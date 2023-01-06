@@ -1,3 +1,11 @@
+<script setup>
+import {defineProps} from 'vue'
+
+defineProps({
+  title: String
+})
+</script>
+
 <template>
   <q-header class="bg-white text-black">
     <q-toolbar
@@ -8,7 +16,7 @@
         class="flex justify-center"
         style="font-size: 28px;font-weight: 600"
       >
-        Header
+        {{ title }}
       </q-toolbar-title>
     </q-toolbar>
   </q-header>
