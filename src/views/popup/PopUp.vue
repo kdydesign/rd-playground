@@ -12,7 +12,6 @@ const { show } = toRefs(props)
 const isShow = ref(false)
 const type = ref('RD')
 const tableHeight = ref(void 0)
-const tttttttt = ref(null)
 const pagination = ref({
   rowsPerPage: 0
 })
