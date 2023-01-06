@@ -5,13 +5,7 @@
   <q-layout view="lhr Lpr lfr">
     <q-page-container>
       <router-view v-slot="{ Component }">
-        <transition
-          enter-active-class="animated fadeIn"
-          leave-active-class="animated fadeOut"
-          mode="out-in"
-        >
-          <component :is="Component" />
-        </transition>
+        <component :is="Component" />
       </router-view>
     </q-page-container>
 
