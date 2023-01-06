@@ -13,6 +13,7 @@ import 'quasar/dist/quasar.css'
 import 'quasar/dist/quasar.addon.css'
 // import 'quasar/src/css/index.sass'
 import '@quasar/extras/material-icons/material-icons.css'
+import 'animate.css'
 
 const app = createApp(App)
 
