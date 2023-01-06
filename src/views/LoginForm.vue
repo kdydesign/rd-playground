@@ -78,6 +78,7 @@ function onJoinMember() {
 .r-btn
   border-radius: 40px
   background: linear-gradient(270deg, #ED0000 4.5%, #B10000 95.5%) !important
+  height: 50px !important
 
 .login-box
   width: 400px
