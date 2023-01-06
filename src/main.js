@@ -22,6 +22,9 @@ app.use(VueFire, {
   firebaseApp
 })
 app.use(Quasar, {
+  plugins: {
+    Notify
+  },
   config: {
     framework: 'all'
   }
