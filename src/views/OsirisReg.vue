@@ -19,7 +19,7 @@ function onOpenList() {
 
 <template>
   <div>
-    <HeaderTop />
+    <HeaderTop title="Osiris Registration"/>
 
     <q-page class="page-a-padding full-width content-center justify-center flex">
       <div
