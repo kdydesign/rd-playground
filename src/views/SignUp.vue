@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import HeaderTop from '@/components/Layouts/HeaderTop.vue'
 
 const router = useRouter()
 
@@ -18,62 +19,66 @@ function onSignUpConfirm () {
 </script>
 
 <template>
-  <q-page class="page-a-padding full-width content-center justify-center flex">
-    <div
-      class="q-mx-auto column"
-      style="width: 500px"
-    >
-      <div class="col q-gutter-y-lg">
-        <q-input
-          v-model="id"
-          label="ID"
-          outlined
-          color="red"
-        />
+  <div>
+    <HeaderTop title="Sign Up" />
 
-        <q-input
-          v-model="pwd"
-          label="Password"
-          outlined
-          color="red"
-        />
-
-        <q-input
-          v-model="cPwd"
-          label="Confirm Password"
-          outlined
-          color="red"
-        />
-
-        <q-input
-          v-model="uid"
-          label="UID"
-          outlined
-          color="red"
-        />
-
-        <q-input
-          v-model="name"
-          label="Name"
-          outlined
-          color="red"
-        />
-
-        <q-input
-          v-model="power"
-          label="Power"
-          outlined
-          color="red"
-        />
-
-        <div class="q-mt-lg float-right">
-          <q-btn
-            label="Sign Up"
+    <q-page class="page-a-padding full-width content-center justify-center flex">
+      <div
+        class="q-mx-auto column q-pl-md q-pr-md"
+        style="width: 500px"
+      >
+        <div class="col q-gutter-y-lg">
+          <q-input
+            v-model="id"
+            label="ID"
+            outlined
             color="red"
-            @click="onSignUpConfirm"
           />
+
+          <q-input
+            v-model="pwd"
+            label="Password"
+            outlined
+            color="red"
+          />
+
+          <q-input
+            v-model="cPwd"
+            label="Confirm Password"
+            outlined
+            color="red"
+          />
+
+          <q-input
+            v-model="uid"
+            label="UID"
+            outlined
+            color="red"
+          />
+
+          <q-input
+            v-model="name"
+            label="Name"
+            outlined
+            color="red"
+          />
+
+          <q-input
+            v-model="power"
+            label="Power"
+            outlined
+            color="red"
+          />
+
+          <div class="q-mt-lg float-right">
+            <q-btn
+              label="Sign Up"
+              color="red"
+              @click="onSignUpConfirm"
+            />
+          </div>
         </div>
       </div>
-    </div>
-  </q-page>
+    </q-page>
+  </div>
 </template>
