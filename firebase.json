@@ -3,12 +3,12 @@
     "rules": "database.rules.json"
   },
   "firestore": {
-    "site": "god-trip",
+    "site": "support-rd",
     "rules": "firestore.rules",
     "indexes": "firestore.indexes.json"
   },
   "hosting": {
-    "site": "god-trip",
+    "site": "support-rd",
     "public": "dist",
     "ignore": [
       "firebase.json",
