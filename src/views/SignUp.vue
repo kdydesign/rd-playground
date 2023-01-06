@@ -1,9 +1,11 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useQuasar } from 'quasar'
 import HeaderTop from '@/components/Layouts/HeaderTop.vue'
 
 const router = useRouter()
+const $q = useQuasar()
 
 const id = ref(void 0)
 const pwd = ref(void 0)
@@ -13,6 +15,11 @@ const name = ref(void 0)
 const power = ref(void 0)
 
 function onSignUpConfirm () {
+  $q.notify({
+    message: '가입되었습니다.',
+    type: 'positive'
+  })
+  
   router.push({ path: '/'})
 
 }
