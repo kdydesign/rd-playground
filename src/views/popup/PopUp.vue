@@ -1,10 +1,11 @@
 <script setup>
-import { toRefs, defineProps, ref, watch } from 'vue'
-import { useFirestore, useCollection  } from 'vuefire'
-import { collection } from 'firebase/firestore'
+import { toRefs, defineProps, ref, watch, computed } from 'vue'
+import { filter } from 'lodash-es'
+// import { useFirestore, useCollection  } from 'vuefire'
+// import { collection } from 'firebase/firestore'
 
-const db = useFirestore()
-const todos = useCollection(collection(db, 'rd-user'))
+// const db = useFirestore()
+// const todos = useCollection(collection(db, 'rd-user'))
 const props = defineProps({
   show: {
     type: Boolean,
@@ -28,8 +29,25 @@ let dataList = []
 for (let i of Array(100)
   .fill(0)
   .map((a, i) => a + (i + 1))) {
-  dataList.push({ seq: i, name: `Test - ${i}`, power: i * 10000000 })
+  let type = 'rd'
+
+  if (i % 2 === 0) {
+    type = 'pd'
+  }
+
+  dataList.push({
+    seq: i,
+    type,
+    name: `Test - ${i}`,
+    power: i * 10000000
+  })
 }
+
+const getDataList = computed(() => {
+  return filter(dataList, (v) => {
+    return v.type === type.value.toLowerCase()
+  })
+})
 
 function onResize(size) {
   tableHeight.value = size.height - 140
@@ -83,7 +101,7 @@ watch(show, (value) => {
           <q-table
             v-model:pagination="pagination"
             :virtual-scroll-sticky-size-start="48"
-            :rows="dataList"
+            :rows="getDataList"
             :columns="columns"
             row-key="seq"
             virtual-scroll
@@ -92,10 +110,8 @@ watch(show, (value) => {
             class="my-sticky-virtscroll-table q-mt-md"
             :style="`height:${tableHeight}px`"
           />
-          
-          <div>
-            {{ todos }}
-          </div>
+
+          <div />
         </div>
       </q-card-section>
     </q-card>
@@ -104,21 +120,19 @@ watch(show, (value) => {
 
 <style lang="sass">
 .my-sticky-virtscroll-table
-  /* height or max-height is important */
   height: 410px
 
   .q-table__top,
   .q-table__bottom,
-  thead tr:first-child th /* bg color is important for th; just specify one */
+  thead tr:first-child th
     background-color: #fff
+
 
   thead tr th
     position: sticky
     z-index: 1
-  /* this will be the loading indicator */
 
   thead tr:last-child th
-    /* height of all previous header rows */
     top: 48px
 
   thead tr:first-child th
