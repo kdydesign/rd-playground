@@ -1,35 +1,37 @@
 <script setup>
+import { defineProps } from 'vue'
+
+defineProps({
+  title: String
+})
 </script>
 
 <template>
-  <q-layout view="lhr Lpr lfr">
-    <q-page-container>
-      <router-view v-slot="{ Component }">
-        <component :is="Component" />
-      </router-view>
-    </q-page-container>
-
-    <q-footer class="bg-white text-grey-5">
-      <q-toolbar class="justify-center">
-        <div class="copyright flex">
-          <span>Copyright © 2023 Team R46D,</span>
-          <span class="sup">RD</span>
-          <span>디와</span>
-        </div>
-      </q-toolbar>
-    </q-footer>
-  </q-layout>
+  <q-header class="bg-white text-black">
+    <q-toolbar
+      class="justify-center"
+      style="border-bottom: 1px solid #efefef; height: 70px"
+    >
+      <q-btn
+        icon="arrow_back"
+        flat
+        dense
+        class="navBack"
+        round
+        @click="$router.go(-1)"
+      />
+      <q-toolbar-title
+        class="flex justify-center"
+        style="font-size: 20px; font-weight: 600"
+      >
+        {{ title }}
+      </q-toolbar-title>
+    </q-toolbar>
+  </q-header>
 </template>
 
 <style lang="sass">
-.fit-min
-  min-width: 100%
-  min-height: 100%
-  height: 0px
-
-.copyright
-  font-size: 12px
-  .sup
-    font-size: 10px
-    line-height: 14px
+.navBack
+  position: absolute
+  left: 10px
 </style>
