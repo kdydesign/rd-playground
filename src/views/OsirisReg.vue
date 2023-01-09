@@ -1,16 +1,23 @@
 <script setup>
 import { ref, onBeforeMount, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { query, getDocs, where} from 'firebase/firestore'
+import { useQuasar, QSpinnerOrbit } from 'quasar'
+import { todosRef } from '@/firebase'
 import moment from 'moment'
 
 import PopUp from '@/views/popup/PopUp.vue'
 import HeaderTop from '@/components/Layouts/HeaderTop.vue'
 
+const $q = useQuasar()
+
 const router = useRouter()
 
 const isPopUpShow = ref(false)
+const alliance = ref('rd')
 const regTime = ref(moment())
 const regTimeTxt = ref('-')
+const dataList = ref([])
 
 let regTimer = void 0
 
@@ -33,12 +40,41 @@ onUnmounted(() => {
   clearTimeout(regTimer)
 })
 
-function onRegistration() {
+function onRegistration () {
   router.push({ path: '/SelectOsiris' })
 }
 
-function onOpenList() {
-  isPopUpShow.value = !isPopUpShow.value
+async function onOpenList (alli) {
+  alliance.value = alli
+
+  $q.loading.show({
+    spinner: QSpinnerOrbit,
+    spinnerSize: 100,
+    spinnerColor: 'red-10',
+    backgroundColor: 'grey-5',
+  })
+
+  try {
+    const q = query(todosRef, where('alliance', '==', alliance))
+    const snapShot = await getDocs(q)
+
+    snapShot.forEach((doc) => {
+      dataList.value.push(doc.data())
+    })
+
+    $q.loading.hide()
+  } catch (err) {
+    console.log(err)
+  }
+
+  $q.loading.hide()
+
+  isPopUpShow.value = true
+}
+
+function onClosePopUp () {
+  dataList.value = []
+  isPopUpShow.value = false
 }
 </script>
 
@@ -95,21 +131,21 @@ function onOpenList() {
                     <a
                       href="#"
                       style="text-decoration: underline;"
-                      @click="onOpenList"
+                      @click="onOpenList('rd')"
                     >14</a>
                   </td>
                   <td>
                     <a
                       href="#"
                       style="text-decoration: underline;"
-                      @click="onOpenList"
+                      @click="onOpenList('pd')"
                     >18</a>
                   </td>
                   <td>
                     <a
                       href="#"
                       style="text-decoration: underline;"
-                      @click="onOpenList"
+                      @click="onOpenList('yd')"
                     >21</a>
                   </td>
                 </tr>
@@ -119,7 +155,12 @@ function onOpenList() {
         </div>
       </div>
 
-      <PopUp :show="isPopUpShow" />
+      <PopUp
+        :show="isPopUpShow"
+        :data-list="dataList"
+        :alliance="alliance"
+        @close="onClosePopUp"
+      />
     </q-page>
   </div>
 </template>
@@ -146,14 +187,19 @@ function onOpenList() {
     border-right: 1px
     border-color: #adadad
     border-style: solid
+
   th:first-child
     border-radius: 6px 0 0 0
+
   th:last-child
     border-radius: 0 6px 0 0
+
   tr:first-child td:first-child
     border-radius: 0 0 0 6px
+
   tr:last-child td:last-child
     border-radius: 0 0 6px 0
+
   td a
     color: #930000
     font-weight: bold
