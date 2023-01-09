@@ -13,6 +13,17 @@ export default defineConfig({
       host: 'localhost'
     }
   },
+  optimizeDeps: {
+    exclude: [
+      'firebase',
+      'firebase/app',
+      'firebase/auth',
+      'firebase/firestore',
+      'firebase/analytics',
+      'firebase/functions',
+      'firebase/storage'
+    ]
+  },
   plugins: [
     vue({ template: transformAssetUrls }),
     quasar({
