@@ -53,7 +53,7 @@ const columns = [
 
 const getDataList = computed(() => {
   return filter(props.dataList, (v) => {
-    return v.alliance === props.alliance.value.toLowerCase()
+    return v.alliance === props.alliance.toLowerCase()
   })
 })
 
