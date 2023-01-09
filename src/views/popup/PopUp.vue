@@ -1,8 +1,6 @@
 <script setup>
-import { toRefs, defineProps, ref, watch, computed } from 'vue'
+import { toRefs, defineProps, ref, watch, computed, defineEmits } from 'vue'
 import { filter } from 'lodash-es'
-// import { useFirestore, useCollection  } from 'vuefire'
-// import { collection } from 'firebase/firestore'
 
 // const db = useFirestore()
 // const todos = useCollection(collection(db, 'rd-user'))
@@ -10,8 +8,18 @@ const props = defineProps({
   show: {
     type: Boolean,
     default: false
+  },
+  dataList: {
+    type: Array,
+    default: () => []
+  },
+  alliance: {
+    type: String,
+    default: 'rd'
   }
 })
+const emits = defineEmits(['close'])
+
 const { show } = toRefs(props)
 const isShow = ref(false)
 const type = ref('RD')
@@ -25,41 +33,47 @@ const columns = [
   { name: 'name', label: 'Name', field: 'name', align: 'center' },
   { name: 'power', label: 'Power', field: 'power', align: 'center' }
 ]
-let dataList = []
-for (let i of Array(100)
-  .fill(0)
-  .map((a, i) => a + (i + 1))) {
-  let type = 'rd'
-
-  if (i % 2 === 0) {
-    type = 'pd'
-  }
-
-  dataList.push({
-    seq: i,
-    type,
-    name: `Test - ${i}`,
-    power: i * 10000000
-  })
-}
+// let dataList = []
+// for (let i of Array(100)
+//     .fill(0)
+//     .map((a, i) => a + (i + 1))) {
+//   let type = 'rd'
+//
+//   if (i % 2 === 0) {
+//     type = 'pd'
+//   }
+//
+//   dataList.push({
+//     seq: i,
+//     type,
+//     name: `Test - ${i}`,
+//     power: i * 10000000
+//   })
+// }
 
 const getDataList = computed(() => {
-  return filter(dataList, (v) => {
-    return v.type === type.value.toLowerCase()
+  return filter(props.dataList, (v) => {
+    return v.alliance === props.alliance.value.toLowerCase()
   })
 })
 
-function onResize(size) {
+function onResize (size) {
   tableHeight.value = size.height - 140
 }
 
+function onClosePopUp () {
+  emits('close')
+}
+
 watch(show, (value) => {
+  type.value = props.alliance
   isShow.value = value
 })
 </script>
 
 <template>
   <q-dialog
+    ref="test"
     v-model="isShow"
     persistent
     :maximized="true"
@@ -81,6 +95,7 @@ watch(show, (value) => {
           flat
           icon="close"
           class="float-right"
+          @click="onClosePopUp"
         />
       </q-item>
 
