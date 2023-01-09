@@ -6,7 +6,7 @@ import App from './App.vue'
 import router from './router'
 import { firebaseApp } from './firebase'
 
-import { Quasar, Notify } from 'quasar'
+import { Quasar, Notify, Loading } from 'quasar'
 
 import './assets/main.css'
 import 'quasar/dist/quasar.css'
@@ -24,7 +24,8 @@ app.use(VueFire, {
 })
 app.use(Quasar, {
   plugins: {
-    Notify
+    Notify,
+    Loading
   },
   config: {
     framework: 'all'
