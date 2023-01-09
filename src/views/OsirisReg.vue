@@ -55,7 +55,7 @@ async function onOpenList (alli) {
   })
 
   try {
-    const q = query(todosRef, where('alliance', '==', alliance))
+    const q = query(todosRef, where('alliance', '==', alliance.value))
     const snapShot = await getDocs(q)
 
     snapShot.forEach((doc) => {
