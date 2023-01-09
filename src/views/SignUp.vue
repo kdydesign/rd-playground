@@ -2,6 +2,9 @@
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
+import { addDoc, serverTimestamp  } from 'firebase/firestore'
+import { todosRef } from '@/firebase'
+import moment from 'moment'
 
 import HeaderTop from '@/components/Layouts/HeaderTop.vue'
 
@@ -32,14 +35,26 @@ const isValidate = computed(() => {
   return isIDValidate && isPwdValidate && isCpwdValidate && isUidValidate && isNameValidate
 })
 
-function onSignUpConfirm() {
+async function onSignUpConfirm() {
   if (isValidate.value) {
-    $q.notify({
-      message: '가입되었습니다.',
-      type: 'positive'
+    const aa = await addDoc(todosRef, {
+      id: id.value,
+      pwd: pwd.value,
+      uid: uid.value,
+      name: name.value,
+      power: power.value,
+      alliance: alliance.value,
+      timestamp: moment(serverTimestamp()).format('YYYY-MM-DD')
     })
 
-    // router.push({ path: '/' })
+    if (aa.id) {
+      await $q.notify({
+        message: '가입되었습니다.',
+        type: 'positive'
+      })
+    }
+
+    await router.push({ path: '/' })
   }
 }
 </script>
