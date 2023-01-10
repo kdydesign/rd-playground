@@ -2,14 +2,24 @@
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { loginStore } from '@/stores/login'
+import { QSpinnerOrbit, useQuasar } from 'quasar'
 
+import SignUpPopUp from '@/views/popup/SignUpPopUp.vue'
+
+const $q = useQuasar()
 const id = ref(void 0)
 const pwd = ref(void 0)
+const showpopup = ref(false)
 const idForm = ref(void 0)
 const passwordForm = ref(void 0)
 const router = useRouter()
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth'
+import { firebaseApp } from '@/firebase'
 
 const { userLogin } = loginStore()
+
+const auth = getAuth()
+const createAuth = getAuth(firebaseApp)
 
 const isValidate = computed(() => {
   const isIDValidate = idForm.value.validate()
@@ -18,15 +28,85 @@ const isValidate = computed(() => {
   return isIDValidate && isPwdValidate
 })
 
-async function onLogin() {
+async function onLogin () {
   if (isValidate.value) {
-    await userLogin()
-    router.push({ path: '/OsirisReg' })
+    $q.loading.show({
+      spinner: QSpinnerOrbit,
+      spinnerSize: 100,
+      spinnerColor: 'red-10',
+      backgroundColor: 'grey-5',
+    })
+
+    // await userLogin()
+
+    signInWithEmailAndPassword(auth, id.value, pwd.value)
+        .then((userCredential) => {
+          // Signed in
+          const user = userCredential.user
+          console.log(user)
+
+          $q.notify({
+            message: '로그인되었습니다.',
+            type: 'positive'
+          })
+
+
+          router.push({ path: '/OsirisReg' })
+          $q.loading.hide()
+          // ...
+        })
+        .catch((error) => {
+          const errorCode = error.code
+          const errorMessage = error.message
+          console.log('err -> ', errorCode)
+          console.log('err -> ', errorMessage)
+
+          $q.notify({
+            message: '계정 정보가 옳바르지 않습니다.',
+            type: 'negative'
+          })
+          $q.loading.hide()
+        })
+
+    // router.push({ path: '/OsirisReg' })
   }
 }
 
-function onJoinMember() {
-  router.push({ path: '/SignUp' })
+function onJoinMember () {
+  showpopup.value = true
+  // router.push({ path: '/SignUp' })
+}
+
+function onSignUp ({email, password}) {
+  $q.loading.show({
+    spinner: QSpinnerOrbit,
+    spinnerSize: 100,
+    spinnerColor: 'red-10',
+    backgroundColor: 'grey-5',
+  })
+
+  createUserWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        // Signed up
+        const user = userCredential.user
+        console.log(user)
+        $q.notify({
+          message: '가입되었습니다.',
+          type: 'positive'
+        })
+        // ...
+        showpopup.value = false
+        $q.loading.hide()
+      })
+      .catch((err) => {
+        console.log(err.code)
+        console.log(err.message)
+        $q.notify({
+          message: '가입에 실패하였습니다.',
+          type: 'negative'
+        })
+        $q.loading.hide()
+      })
 }
 </script>
 
@@ -88,6 +168,12 @@ function onJoinMember() {
         </a>
       </div>
     </div>
+
+    <sign-up-pop-up
+      :show="showpopup"
+      @close="showpopup = false"
+      @applySignUp="onSignUp"
+    />
   </q-page>
 </template>
 
