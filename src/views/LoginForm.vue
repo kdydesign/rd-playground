@@ -16,7 +16,7 @@ const router = useRouter()
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth'
 import { firebaseApp } from '@/firebase'
 
-const { userLogin } = loginStore()
+const store = loginStore()
 
 const auth = getAuth()
 const createAuth = getAuth(firebaseApp)
@@ -43,7 +43,11 @@ async function onLogin () {
         .then((userCredential) => {
           // Signed in
           const user = userCredential.user
-          console.log(user)
+
+          store.$patch({
+            userUID: user.uid
+          })
+          console.log('-->', user.uid)
 
           $q.notify({
             message: '로그인되었습니다.',
