@@ -1,8 +1,8 @@
 <script setup>
-import { toRefs, defineProps, ref, watch, computed, defineEmits } from 'vue'
-import { filter } from 'lodash-es'
+import { toRefs, defineProps, ref, watch, computed, defineEmits, shallowRef, toRaw, reactive } from 'vue'
+import { filter, cloneDeep } from 'lodash-es'
 import { query, getDocs, where} from 'firebase/firestore'
-import { todosRef } from '@/firebase'
+import { getCollection, todosRef } from '@/firebase'
 import { useQuasar, QSpinnerOrbit } from 'quasar'
 
 
@@ -25,8 +25,8 @@ const props = defineProps({
 })
 const emits = defineEmits(['close'])
 
-const { show, dataList} = toRefs(props)
-const localDataList = ref(dataList.value)
+const { show} = toRefs(props)
+const localDataList = ref(props.dataList)
 const isShow = ref(false)
 const type = ref(void 0)
 const tableHeight = ref(void 0)
@@ -54,9 +54,10 @@ const columns = [
 ]
 
 const getDataList = computed(() => {
-  return filter(localDataList.value, (v) => {
-    return v.alliance === type.value.toLowerCase()
-  })
+  return localDataList.value
+  // return filter(localDataList.value, (v) => {
+  //   return v.alliance === type.value.toLowerCase()
+  // })
 })
 
 function onResize (size) {
@@ -69,7 +70,7 @@ function onClosePopUp () {
 
 async function onChangeAlli (val) {
   localDataList.value = []
-
+  console.log('1 ', localDataList.value)
   $q.loading.show({
     spinner: QSpinnerOrbit,
     spinnerSize: 100,
@@ -78,9 +79,9 @@ async function onChangeAlli (val) {
   })
 
   try {
-    const q = query(todosRef, where('alliance', '==', val.toLowerCase()))
-    const snapShot = await getDocs(q)
+    const snapShot = await getDocs(getCollection(val.toLowerCase()))
 
+    console.log('2  ', localDataList.value)
     snapShot.forEach((doc) => {
       localDataList.value.push(doc.data())
     })
@@ -92,6 +93,7 @@ async function onChangeAlli (val) {
 }
 
 watch(show, (value) => {
+  localDataList.value = props.dataList
   type.value = props.alliance
   isShow.value = value
 })
