@@ -1,9 +1,9 @@
 <script setup>
-import { ref, onBeforeMount, onUnmounted } from 'vue'
+import { ref, onBeforeMount, onUnmounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
-import { query, getDocs, where} from 'firebase/firestore'
+import { query, getDocs, getCountFromServer, where } from 'firebase/firestore'
 import { useQuasar, QSpinnerOrbit } from 'quasar'
-import { todosRef } from '@/firebase'
+import { todosRef, rdRegOsirisRef, pdRegOsirisRef, ydRegOsirisRef ,getCollection } from '@/firebase'
 import moment from 'moment'
 
 import PopUp from '@/views/popup/PopUp.vue'
@@ -19,6 +19,10 @@ const regTime = ref(moment())
 const regTimeTxt = ref('-')
 const dataList = ref([])
 
+const rdCnt = ref(0)
+const pdCnt = ref(0)
+const ydCnt = ref(0)
+
 let regTimer = void 0
 
 const timer = () => {
@@ -32,8 +36,32 @@ const timer = () => {
   }, 1000)
 }
 
-onBeforeMount(() => {
+onBeforeMount(async () => {
   timer()
+
+  $q.loading.show({
+    spinner: QSpinnerOrbit,
+    spinnerSize: 100,
+    spinnerColor: 'red-10',
+    backgroundColor: 'grey-5',
+  })
+
+  try {
+    const [rd, pd, yd] = await Promise.all([
+      await getCountFromServer(rdRegOsirisRef),
+      await getCountFromServer(pdRegOsirisRef),
+      await getCountFromServer(ydRegOsirisRef)
+    ])
+
+    rdCnt.value = rd.data().count
+    pdCnt.value = pd.data().count
+    ydCnt.value = yd.data().count
+
+    $q.loading.hide()
+  } catch (err) {
+    console.log(err)
+  }
+
 })
 
 onUnmounted(() => {
@@ -45,6 +73,7 @@ function onRegistration () {
 }
 
 async function onOpenList (alli) {
+  dataList.value = []
   alliance.value = alli
 
   $q.loading.show({
@@ -55,10 +84,10 @@ async function onOpenList (alli) {
   })
 
   try {
-    const q = query(todosRef, where('alliance', '==', alliance.value))
-    const snapShot = await getDocs(q)
+    const snapShot = await getDocs(getCollection(alli))
 
     snapShot.forEach((doc) => {
+      console.log(doc.data())
       dataList.value.push(doc.data())
     })
 
@@ -68,6 +97,7 @@ async function onOpenList (alli) {
   }
 
   $q.loading.hide()
+  nextTick()
 
   isPopUpShow.value = true
 }
@@ -132,21 +162,21 @@ function onClosePopUp () {
                       href="#"
                       style="text-decoration: underline;"
                       @click="onOpenList('rd')"
-                    >14</a>
+                    >{{ rdCnt }}</a>
                   </td>
                   <td>
                     <a
                       href="#"
                       style="text-decoration: underline;"
                       @click="onOpenList('pd')"
-                    >18</a>
+                    >{{ pdCnt }}</a>
                   </td>
                   <td>
                     <a
                       href="#"
                       style="text-decoration: underline;"
                       @click="onOpenList('yd')"
-                    >21</a>
+                    >{{ ydCnt }}</a>
                   </td>
                 </tr>
               </tbody>
