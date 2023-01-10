@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app'
-import { getFirestore, collection } from 'firebase/firestore'
+import { getFirestore, collection, doc } from 'firebase/firestore'
 // ... other firebase imports
 
 export const firebaseApp = initializeApp({
@@ -15,3 +15,10 @@ export const firebaseApp = initializeApp({
 const db = getFirestore(firebaseApp)
 
 export const todosRef = collection(db, 'rd-user')
+export const rdRegOsirisRef = collection(db, 'rd-reg-osiris/rd/applicants-list')
+export const pdRegOsirisRef = collection(db, 'rd-reg-osiris/pd/applicants-list')
+export const ydRegOsirisRef = collection(db, 'rd-reg-osiris/yd/applicants-list')
+
+export const getCollection = (col) => {
+  return collection(db, `rd-reg-osiris/${col}/applicants-list`)
+}
