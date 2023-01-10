@@ -1,7 +1,12 @@
 <script setup>
 import { toRefs, defineProps, ref, watch, computed, defineEmits } from 'vue'
 import { filter } from 'lodash-es'
+import { query, getDocs, where} from 'firebase/firestore'
+import { todosRef } from '@/firebase'
+import { useQuasar, QSpinnerOrbit } from 'quasar'
 
+
+const $q = useQuasar()
 // const db = useFirestore()
 // const todos = useCollection(collection(db, 'rd-user'))
 const props = defineProps({
@@ -20,40 +25,37 @@ const props = defineProps({
 })
 const emits = defineEmits(['close'])
 
-const { show } = toRefs(props)
+const { show, dataList} = toRefs(props)
+const localDataList = ref(dataList.value)
 const isShow = ref(false)
-const type = ref('RD')
+const type = ref(void 0)
 const tableHeight = ref(void 0)
 const pagination = ref({
   rowsPerPage: 0
 })
-const opts = ref(['RD', 'PD', 'YD'])
+const opts = ref([
+  {
+    label: 'RD',
+    value: 'rd',
+  },
+  {
+    label: 'PD',
+    value: 'pd',
+  },
+  {
+    label: 'YD',
+    value: 'yd',
+  },
+])
 const columns = [
   { name: 'seq', label: 'No.', field: 'seq', align: 'center' },
   { name: 'name', label: 'Name', field: 'name', align: 'center' },
   { name: 'power', label: 'Power', field: 'power', align: 'center' }
 ]
-// let dataList = []
-// for (let i of Array(100)
-//     .fill(0)
-//     .map((a, i) => a + (i + 1))) {
-//   let type = 'rd'
-//
-//   if (i % 2 === 0) {
-//     type = 'pd'
-//   }
-//
-//   dataList.push({
-//     seq: i,
-//     type,
-//     name: `Test - ${i}`,
-//     power: i * 10000000
-//   })
-// }
 
 const getDataList = computed(() => {
-  return filter(props.dataList, (v) => {
-    return v.alliance === props.alliance.toLowerCase()
+  return filter(localDataList.value, (v) => {
+    return v.alliance === type.value.toLowerCase()
   })
 })
 
@@ -63,6 +65,30 @@ function onResize (size) {
 
 function onClosePopUp () {
   emits('close')
+}
+
+async function onChangeAlli (val) {
+  localDataList.value = []
+
+  $q.loading.show({
+    spinner: QSpinnerOrbit,
+    spinnerSize: 100,
+    spinnerColor: 'red-10',
+    backgroundColor: 'grey-5',
+  })
+
+  try {
+    const q = query(todosRef, where('alliance', '==', val.toLowerCase()))
+    const snapShot = await getDocs(q)
+
+    snapShot.forEach((doc) => {
+      localDataList.value.push(doc.data())
+    })
+
+    $q.loading.hide()
+  } catch (err) {
+    console.log(err)
+  }
 }
 
 watch(show, (value) => {
@@ -86,7 +112,7 @@ watch(show, (value) => {
       <q-item class="title-back">
         <q-item-section>
           <q-item-label style="font-weight: bold">
-            신청 목록
+            {{ type.toUpperCase() }} 신청 목록
           </q-item-label>
         </q-item-section>
         <q-btn
@@ -108,7 +134,10 @@ watch(show, (value) => {
             outlined
             dense
             :options="opts"
+            map-options
+            emit-value
             style="width: 80px"
+            @update:model-value="onChangeAlli"
           />
         </div>
 
