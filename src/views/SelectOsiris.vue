@@ -1,50 +1,100 @@
 <script setup>
-import { ref } from 'vue'
-import { useQuasar } from 'quasar'
+import { inject, onBeforeMount, reactive, ref } from 'vue'
+import { setRegOsiris, getOsirisRegCnt } from '@/firebase/fireStore'
+
+// inject global component
+const $loader = inject('$loader')
+const $notify = inject('$notify')
+
+// pinia
+import { loginStore } from '@/stores/login'
+
+const { userUID, name, power, uid, alliance } = loginStore()
+
+// components
 import HeaderTop from '@/components/Layouts/HeaderTop.vue'
+import SubNav from '@/components/Layouts/SubNav.vue'
 
-const $q = useQuasar()
-
-const regArr = ref([
+// model
+const rdRegCnt = ref(0)
+const pdRegCnt = ref(0)
+const ydRegCnt = ref(0)
+const regArr = reactive([
   {
     key: 'rd',
     name: 'RD',
     date: '2023/02/07 11:00',
-    numPeopleCnt: 24
+    numPeopleCnt: rdRegCnt
   },
   {
     key: 'pd',
     name: 'PD',
     date: '2023/02/07 13:00',
-    numPeopleCnt: 14
+    numPeopleCnt: pdRegCnt
   },
   {
     key: 'yd',
     name: 'YD',
     date: '2023/02/08 15:30',
-    numPeopleCnt: 8
+    numPeopleCnt: ydRegCnt
   }
 ])
 
-function onRegistration(key) {
-  let findReg  = regArr.value.find(a => a.key === key)
+/**
+ * life cycle
+ */
+onBeforeMount(async () => {
+  $loader.show()
+
+  const [rdCnt, pdCnt, ydCnt] = await Promise.all([
+    await getOsirisRegCnt('rd'),
+    await getOsirisRegCnt('pd'),
+    await getOsirisRegCnt('yd')
+  ])
+
+  rdRegCnt.value = rdCnt
+  pdRegCnt.value = pdCnt
+  ydRegCnt.value = ydCnt
+
+
+  $loader.hide()
+})
+
+/**
+ * methods
+ */
+
+// osiris registration
+async function onRegistration (key) {
+  $loader.show()
+
+  await setRegOsiris(key, userUID, {
+    name,
+    power,
+    alliance,
+    uid
+  })
+
+  $loader.hide()
+
+  let findReg = regArr.find(a => a.key === key)
 
   if (findReg.numPeopleCnt < 30) {
-    findReg.numPeopleCnt++
+    findReg.numPeopleCnt = await getOsirisRegCnt(key)
 
-    $q.notify({
+    $notify.show({
       message: '신청되었습니다.',
       type: 'positive'
     })
   } else {
-    $q.notify({
+    $notify.show({
       message: '신청 인원을 초과하였습니다.',
       type: 'negative'
     })
   }
 }
 
-function getSectionClass(key) {
+function getSectionClass (key) {
   return `rd-select-${key} text-white`
 }
 </script>
@@ -53,16 +103,16 @@ function getSectionClass(key) {
     <HeaderTop title="Osiris Registration" />
 
     <q-page
-      class="page-a-padding full-width content-center justify-center flex"
+      class="page-a-padding full-width justify-center flex"
     >
       <div
-        class="q-mx-auto column q-gutter-y-lg q-pr-md q-pl-md"
+        class="q-mx-auto q-pr-md q-pl-md q-mt-md"
         style="width: 100%"
       >
         <div
           v-for="reg in regArr"
           :key="reg.key"
-          class="col"
+          class="q-mt-lg"
         >
           <q-card class="my-card">
             <q-card-section :class="getSectionClass(reg.key)">
