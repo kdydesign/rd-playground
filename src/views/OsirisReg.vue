@@ -1,18 +1,21 @@
 <script setup>
-import { ref, onBeforeMount, onUnmounted, nextTick } from 'vue'
+import { ref, onBeforeMount, onUnmounted, nextTick, inject } from 'vue'
 import { useRouter } from 'vue-router'
-import { query, getDocs, getCountFromServer, where } from 'firebase/firestore'
-import { useQuasar, QSpinnerOrbit } from 'quasar'
-import { todosRef, rdRegOsirisRef, pdRegOsirisRef, ydRegOsirisRef ,getCollection } from '@/firebase'
+import { getOsirisRegCnt, getOsirisRegList } from '@/firebase/fireStore'
+
 import moment from 'moment'
 
+// inject global component
+const $loader = inject('$loader')
+
+// composable api
+const router = useRouter()
+
+// components
 import PopUp from '@/views/popup/PopUp.vue'
 import HeaderTop from '@/components/Layouts/HeaderTop.vue'
 
-const $q = useQuasar()
-
-const router = useRouter()
-
+// model
 const isPopUpShow = ref(false)
 const alliance = ref('rd')
 const regTime = ref(moment())
@@ -36,28 +39,27 @@ const timer = () => {
   }, 1000)
 }
 
+/**
+ * life cycel
+ */
+
 onBeforeMount(async () => {
   timer()
 
-  $q.loading.show({
-    spinner: QSpinnerOrbit,
-    spinnerSize: 100,
-    spinnerColor: 'red-10',
-    backgroundColor: 'grey-5',
-  })
+  $loader.show()
 
   try {
     const [rd, pd, yd] = await Promise.all([
-      await getCountFromServer(rdRegOsirisRef),
-      await getCountFromServer(pdRegOsirisRef),
-      await getCountFromServer(ydRegOsirisRef)
+      await getOsirisRegCnt('rd'),
+      await getOsirisRegCnt('pd'),
+      await getOsirisRegCnt('yd')
     ])
 
-    rdCnt.value = rd.data().count
-    pdCnt.value = pd.data().count
-    ydCnt.value = yd.data().count
+    rdCnt.value = rd
+    pdCnt.value = pd
+    ydCnt.value = yd
 
-    $q.loading.hide()
+    $loader.hide()
   } catch (err) {
     console.log(err)
   }
@@ -68,40 +70,42 @@ onUnmounted(() => {
   clearTimeout(regTimer)
 })
 
+/**
+ * methods
+ */
+
+// osiris 등록 페이지 이동
 function onRegistration () {
   router.push({ path: '/SelectOsiris' })
 }
 
-async function onOpenList (alli) {
+// 등록된 osiris 목록 확인
+async function onOpenList (openAlli) {
   dataList.value = []
-  alliance.value = alli
+  alliance.value = openAlli
 
-  $q.loading.show({
-    spinner: QSpinnerOrbit,
-    spinnerSize: 100,
-    spinnerColor: 'red-10',
-    backgroundColor: 'grey-5',
-  })
+  $loader.show()
 
   try {
-    const snapShot = await getDocs(getCollection(alli))
+    const result = await getOsirisRegList(openAlli)
 
-    snapShot.forEach((doc) => {
-      console.log(doc.data())
+    result.forEach((doc) => {
       dataList.value.push(doc.data())
     })
 
-    $q.loading.hide()
+    $loader.hide()
   } catch (err) {
     console.log(err)
   }
 
-  $q.loading.hide()
-  nextTick()
+  $loader.hide()
+
+  await nextTick()
 
   isPopUpShow.value = true
 }
 
+// 팝업 닫기
 function onClosePopUp () {
   dataList.value = []
   isPopUpShow.value = false
@@ -110,28 +114,31 @@ function onClosePopUp () {
 
 <template>
   <div>
-    <HeaderTop title="Osiris Registration" />
+<!--    <HeaderTop title="Osiris Registration" />-->
 
     <q-page
-      class="page-a-padding full-width content-center justify-center flex"
+      class="page-a-padding full-width column justify-center flex"
     >
+      <div class="q-mt-md q-ml-md q-mb-xl">
+        <span>등록까지 남은 시간: </span>
+        <span class="regTimeTxt">{{ regTimeTxt }}</span>
+      </div>
+
       <div
-        class="q-mx-auto column"
-        style="width: 500px; text-align: center"
+        class="col q-mt-xl"
+        style="text-align: center"
       >
         <div class="col">
           <q-btn
             size="50px"
             round
-            icon="supervised_user_circle"
+            label="reg"
             color="white"
             class="r-btn"
             @click="onRegistration"
           />
 
-          <h2>{{ regTimeTxt }}</h2>
-
-          <div class="rd-container q-pr-md q-pl-md">
+          <div class="rd-container q-pr-md q-pl-md q-mt-xl">
             <span class="rd-sub-title float-left">지원 현황</span>
 
             <table class="status-table q-table">
@@ -185,6 +192,7 @@ function onClosePopUp () {
         </div>
       </div>
 
+      <!--osiris 목록 팝업-->
       <PopUp
         :show="isPopUpShow"
         :data-list="dataList"
@@ -199,10 +207,16 @@ function onClosePopUp () {
 .r-btn
   border-radius: 130px
   background: linear-gradient(270deg, #ED0000 4.5%, #B10000 95.5%) !important
+  span.block
+    font-size: 34px
+    box-shadow: darkorange
+    text-shadow: 0px 4px 9px rgb(0 0 0 / 30%)
 
-.status-table.th-head
-  font-size: 18px !important
-  color: #fff
+
+.status-table .th-head
+  font-size: 16px !important
+  font-weight: bold
+  color: #fff !important
 
 .status-table.q-table
   box-shadow: 0px 4px 9px rgb(0 0 0 / 11%)
@@ -239,4 +253,10 @@ function onClosePopUp () {
   font-size: 12px
   margin: 0 0 5px 5px
   font-weight: 600
+
+.regTimeTxt
+  font-weight: 600
+  color: #b90000
+  font-size: 20px
+
 </style>
