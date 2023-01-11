@@ -13,7 +13,6 @@ const { userUID, name, power, uid, alliance } = loginStore()
 
 // components
 import HeaderTop from '@/components/Layouts/HeaderTop.vue'
-import SubNav from '@/components/Layouts/SubNav.vue'
 
 // model
 const rdRegCnt = ref(0)
