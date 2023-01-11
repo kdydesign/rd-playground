@@ -114,7 +114,7 @@ function onClosePopUp () {
 
 <template>
   <div>
-<!--    <HeaderTop title="Osiris Registration" />-->
+    <HeaderTop title="Osiris Registration" />
 
     <q-page
       class="page-a-padding full-width column justify-center flex"
