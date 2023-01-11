@@ -4,7 +4,7 @@ import { VueFire } from 'vuefire'
 
 import App from './App.vue'
 import router from './router'
-import { firebaseApp } from './firebase'
+import firebaseApp from '@/firebase/index'
 import { Quasar, Notify, Loading } from 'quasar'
 
 import './assets/main.css'
