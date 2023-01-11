@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import { setUserInfo } from '@/firebase/fireStore'
 
 // inject global component
+const $loader = inject('$loader')
 const $notify = inject('$notify')
 
 // composable api
@@ -15,7 +16,7 @@ import HeaderTop from '@/components/Layouts/HeaderTop.vue'
 // pinia
 import { loginStore } from '@/stores/login'
 
-const { userUID } = loginStore()
+const { userUID, setUserInfo: setStoreUserInfo } = loginStore()
 
 // model
 const uid = ref(void 0)
@@ -42,8 +43,10 @@ const isValidate = computed(() => {
  */
 
 // sign-up
-async function onSignUpConfirm() {
+async function onSignUpConfirm () {
   if (isValidate.value) {
+    $loader.show()
+
     await setUserInfo(userUID, {
       uid: uid.value,
       name: name.value,
@@ -51,12 +54,22 @@ async function onSignUpConfirm() {
       alliance: alliance.value
     })
 
+    setStoreUserInfo({
+      uid: uid.value,
+      name: name.value,
+      power: power.value,
+      alliance: alliance.value,
+      level: 2
+    }, userUID)
+
     $notify.show({
-      message: '가입되었습니다.',
+      message: 'In-Game 정보가 저장되었습니다.',
       type: 'positive'
     })
 
-    router.push({ path: '/' })
+    $loader.hide()
+
+    router.push({ path: '/OsirisReg' })
   }
 }
 </script>
@@ -129,7 +142,7 @@ async function onSignUpConfirm() {
 
           <div class="q-mt-lg float-right">
             <q-btn
-              label="Sign Up"
+              label="Confirm"
               color="red-10"
               @click="onSignUpConfirm"
             />
