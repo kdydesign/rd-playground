@@ -1,3 +1,7 @@
+body {
+  background: radial-gradient(141.55% 78.85% at 51% -3.85%, #E80000 14%, rgb(0 0 0) 121%);
+}
+
 a {
   text-decoration: none;
   transition: 0.4s;
