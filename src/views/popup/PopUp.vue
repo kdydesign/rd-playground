@@ -1,14 +1,11 @@
 <script setup>
-import { toRefs, defineProps, ref, watch, computed, defineEmits, shallowRef, toRaw, reactive } from 'vue'
-import { filter, cloneDeep } from 'lodash-es'
-import { query, getDocs, where} from 'firebase/firestore'
-import { getCollection, todosRef } from '@/firebase'
-import { useQuasar, QSpinnerOrbit } from 'quasar'
+import { toRefs, defineProps, ref, watch, computed, defineEmits, inject } from 'vue'
+import { getOsirisRegList } from '@/firebase/fireStore'
 
+// inject global component
+const $loader = inject('$loader')
 
-const $q = useQuasar()
-// const db = useFirestore()
-// const todos = useCollection(collection(db, 'rd-user'))
+// props
 const props = defineProps({
   show: {
     type: Boolean,
@@ -23,9 +20,12 @@ const props = defineProps({
     default: 'rd'
   }
 })
+
+// event emits
 const emits = defineEmits(['close'])
 
-const { show} = toRefs(props)
+// model
+const { show } = toRefs(props)
 const localDataList = ref(props.dataList)
 const isShow = ref(false)
 const type = ref(void 0)
@@ -53,11 +53,13 @@ const columns = [
   { name: 'power', label: 'Power', field: 'power', align: 'center' }
 ]
 
+/**
+ * computed
+ */
+
+// 지원 목록 조회
 const getDataList = computed(() => {
   return localDataList.value
-  // return filter(localDataList.value, (v) => {
-  //   return v.alliance === type.value.toLowerCase()
-  // })
 })
 
 function onResize (size) {
@@ -68,29 +70,28 @@ function onClosePopUp () {
   emits('close')
 }
 
+// alliance 변경
 async function onChangeAlli (val) {
+  $loader.show()
+
   localDataList.value = []
-  console.log('1 ', localDataList.value)
-  $q.loading.show({
-    spinner: QSpinnerOrbit,
-    spinnerSize: 100,
-    spinnerColor: 'red-10',
-    backgroundColor: 'grey-5',
-  })
 
   try {
-    const snapShot = await getDocs(getCollection(val.toLowerCase()))
+    const result = await getOsirisRegList(val.toLowerCase())
 
-    console.log('2  ', localDataList.value)
-    snapShot.forEach((doc) => {
+    result.forEach((doc) => {
       localDataList.value.push(doc.data())
     })
 
-    $q.loading.hide()
+    $loader.hide()
   } catch (err) {
     console.log(err)
   }
 }
+
+/**
+ * watch
+ */
 
 watch(show, (value) => {
   localDataList.value = props.dataList
@@ -156,8 +157,6 @@ watch(show, (value) => {
             class="my-sticky-virtscroll-table q-mt-md"
             :style="`height:${tableHeight}px`"
           />
-
-          <div />
         </div>
       </q-card-section>
     </q-card>
