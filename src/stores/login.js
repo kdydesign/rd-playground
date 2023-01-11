@@ -32,4 +32,6 @@ export const loginStore = defineStore('login', () => {
     setUserInfo,
     setUserUID
   }
+},{
+  persist: true
 })
