@@ -1,112 +1,78 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, inject } from 'vue'
 import { useRouter } from 'vue-router'
-import { useQuasar } from 'quasar'
-import { addDoc, serverTimestamp  } from 'firebase/firestore'
-import { todosRef } from '@/firebase'
-import moment from 'moment'
+import { setUserInfo } from '@/firebase/fireStore'
 
+// inject global component
+const $notify = inject('$notify')
+
+// composable api
+const router = useRouter()
+
+// components
 import HeaderTop from '@/components/Layouts/HeaderTop.vue'
 
-const router = useRouter()
-const $q = useQuasar()
+// pinia
+import { loginStore } from '@/stores/login'
 
-const id = ref(void 0)
-const pwd = ref(void 0)
-const cPwd = ref(void 0)
+const { userUID } = loginStore()
+
+// model
 const uid = ref(void 0)
 const name = ref(void 0)
 const power = ref(void 0)
 const alliance = ref('rd')
-
-const idField = ref(void 0)
-const pwdField = ref(void 0)
-const cPwdField = ref(void 0)
 const uidField = ref(void 0)
 const nameField = ref(void 0)
 
+/**
+ * computed
+ */
+
+// validation check
 const isValidate = computed(() => {
-  const isIDValidate = idField.value.validate()
-  const isPwdValidate = pwdField.value.validate()
-  const isCpwdValidate = cPwdField.value.validate()
   const isUidValidate = uidField.value.validate()
   const isNameValidate = nameField.value.validate()
 
-  return isIDValidate && isPwdValidate && isCpwdValidate && isUidValidate && isNameValidate
+  return isUidValidate && isNameValidate
 })
 
+/**
+ * methods
+ */
+
+// sign-up
 async function onSignUpConfirm() {
   if (isValidate.value) {
-    const aa = await addDoc(todosRef, {
-      id: id.value,
-      pwd: pwd.value,
+    await setUserInfo(userUID, {
       uid: uid.value,
       name: name.value,
       power: power.value,
-      alliance: alliance.value,
-      timestamp: moment(serverTimestamp()).format('YYYY-MM-DD')
+      alliance: alliance.value
     })
 
-    if (aa.id) {
-      await $q.notify({
-        message: '가입되었습니다.',
-        type: 'positive'
-      })
-    }
+    $notify.show({
+      message: '가입되었습니다.',
+      type: 'positive'
+    })
 
-    await router.push({ path: '/' })
+    router.push({ path: '/' })
   }
 }
 </script>
 
 <template>
   <div>
-    <HeaderTop title="Sign Up" />
+    <HeaderTop title="In-game Information" />
 
     <q-page
-      class="page-a-padding full-width content-center justify-center flex"
+      class="page-a-padding full-width justify-center flex"
     >
       <div
-        class="q-mx-auto column q-pl-md q-pr-md"
+        class="q-mx-auto column q-pl-md q-pr-md q-mt-md"
         style="width: 500px"
       >
         <div class="col q-gutter-y-xs">
-          <div>
-            <span class="input-title">ID <span class="input-require">*</span></span>
-            <q-input
-              ref="idField"
-              v-model="id"
-              outlined
-              dense
-              color="red"
-              :rules="[(val) => !!val || '필수입력입니다.']"
-            />
-          </div>
-
-          <div>
-            <span class="input-title">Password <span class="input-require">*</span></span>
-            <q-input
-              ref="pwdField"
-              v-model="pwd"
-              outlined
-              dense
-              color="red"
-              :rules="[(val) => !!val || '필수입력입니다.']"
-            />
-          </div>
-
-          <div>
-            <span class="input-title">Confirm <span class="input-require">*</span></span>
-            <q-input
-              ref="cPwdField"
-              v-model="cPwd"
-              outlined
-              dense
-              color="red"
-              :rules="[(val) => !!val || '필수입력입니다.']"
-            />
-          </div>
-
           <div>
             <span class="input-title">UID <span class="input-require">*</span></span>
             <q-input
