@@ -1,9 +1,13 @@
 <script setup>
-import { defineProps } from 'vue'
+import { ref, defineProps } from 'vue'
 
+// props
 defineProps({
   title: String
 })
+
+// model
+const drawerRight = ref(false)
 </script>
 
 <template>
@@ -26,6 +30,13 @@ defineProps({
       >
         {{ title }}
       </q-toolbar-title>
+      <q-btn
+        flat
+        round
+        dense
+        icon="menu"
+        @click="drawerRight = !drawerRight"
+      />
     </q-toolbar>
   </q-header>
 </template>
