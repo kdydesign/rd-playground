@@ -1,116 +1,120 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, inject } from 'vue'
 import { useRouter } from 'vue-router'
-import { loginStore } from '@/stores/login'
-import { QSpinnerOrbit, useQuasar } from 'quasar'
+import { getLogin, getJoinAuth } from '@/firebase/fireAuth'
+import { getUserInfo } from '@/firebase/fireStore'
 
+// inject global component
+const $loader = inject('$loader')
+const $notify = inject('$notify')
+
+// composable api
+const router = useRouter()
+
+// popup
 import SignUpPopUp from '@/views/popup/SignUpPopUp.vue'
 
-const $q = useQuasar()
-const id = ref(void 0)
-const pwd = ref(void 0)
-const showpopup = ref(false)
-const idForm = ref(void 0)
-const passwordForm = ref(void 0)
-const router = useRouter()
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth'
-import { firebaseApp } from '@/firebase'
+// pinia
+import { loginStore } from '@/stores/login'
 
-const store = loginStore()
+const { setUserInfo, setUserUID } = loginStore()
 
-const auth = getAuth()
-const createAuth = getAuth(firebaseApp)
+// model
+const userId = ref(void 0)
+const userPassword = ref(void 0)
+const userIdForm = ref(void 0)
+const userPasswordForm = ref(void 0)
+const isShowSignUpPopUp = ref(false)
 
+/**
+ * computed
+ */
+
+// validation check
 const isValidate = computed(() => {
-  const isIDValidate = idForm.value.validate()
-  const isPwdValidate = passwordForm.value.validate()
+  const isIDValidate = userIdForm.value.validate()
+  const isPwdValidate = userPasswordForm.value.validate()
 
   return isIDValidate && isPwdValidate
 })
 
+/**
+ * methods
+ */
+
+// login
 async function onLogin () {
   if (isValidate.value) {
-    $q.loading.show({
-      spinner: QSpinnerOrbit,
-      spinnerSize: 100,
-      spinnerColor: 'red-10',
-      backgroundColor: 'grey-5',
-    })
+    $loader.show()
 
-    // await userLogin()
+    const parseUserId = `${userId.value}@power.rd`
+    const { result, status, errors } = await getLogin(parseUserId, userPassword.value)
 
-    signInWithEmailAndPassword(auth, id.value, pwd.value)
-        .then((userCredential) => {
-          // Signed in
-          const user = userCredential.user
+    if (status === 'ok') {
+      const user = result.user
+      const isSuperUser = user.email === 'admin@power.rd'
+      const userInfo = await getUserInfo(user.uid)
 
-          store.$patch({
-            userUID: user.uid
-          })
-          console.log('-->', user.uid)
+      setUserUID(user.uid)
 
-          $q.notify({
-            message: '로그인되었습니다.',
-            type: 'positive'
-          })
+      $notify.show({
+        message: '로그인되었습니다.',
+        type: 'positive'
+      })
 
+      $loader.hide()
 
-          router.push({ path: '/OsirisReg' })
-          $q.loading.hide()
-          // ...
-        })
-        .catch((error) => {
-          const errorCode = error.code
-          const errorMessage = error.message
-          console.log('err -> ', errorCode)
-          console.log('err -> ', errorMessage)
+      if (userInfo || isSuperUser) {
+        await setUserInfo(userInfo, user.uid)
+        await router.push({ path: '/OsirisReg' })
+      } else {
+        await router.push({ path: '/SignUp' })
+      }
+    }
 
-          $q.notify({
-            message: '계정 정보가 옳바르지 않습니다.',
-            type: 'negative'
-          })
-          $q.loading.hide()
-        })
+    if (status === 'error') {
+      $notify.show({
+        message: '계정 정보가 옳바르지 않습니다.',
+        type: 'negative'
+      })
 
-    // router.push({ path: '/OsirisReg' })
+      $loader.hide()
+
+      console.log('[getLogin]: ', errors)
+    }
   }
 }
 
-function onJoinMember () {
-  showpopup.value = true
-  // router.push({ path: '/SignUp' })
-}
+// apply sign-up
+async function onApplySignUp ({ userId: signUpID, userPassword: signUpPwd }) {
+  $loader.show()
 
-function onSignUp ({email, password}) {
-  $q.loading.show({
-    spinner: QSpinnerOrbit,
-    spinnerSize: 100,
-    spinnerColor: 'red-10',
-    backgroundColor: 'grey-5',
-  })
+  const parseUserId = `${signUpID}@power.rd`
+  const { status, errors } = await getJoinAuth(parseUserId, signUpPwd)
 
-  createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        // Signed up
-        const user = userCredential.user
-        console.log(user)
-        $q.notify({
-          message: '가입되었습니다.',
-          type: 'positive'
-        })
-        // ...
-        showpopup.value = false
-        $q.loading.hide()
-      })
-      .catch((err) => {
-        console.log(err.code)
-        console.log(err.message)
-        $q.notify({
-          message: '가입에 실패하였습니다.',
-          type: 'negative'
-        })
-        $q.loading.hide()
-      })
+  if (status === 'ok') {
+    $notify.show({
+      message: '가입되었습니다.',
+      type: 'positive'
+    })
+
+    isShowSignUpPopUp.value = false
+    userId.value = signUpID
+    userPassword.value = signUpPwd
+
+    $loader.hide()
+  }
+
+  if (status === 'error') {
+    $notify.show({
+      message: '가입에 실패하였습니다.',
+      type: 'negative'
+    })
+
+    $loader.hide()
+
+    console.log('[getJoinAuth]: ', errors)
+  }
 }
 </script>
 
@@ -126,11 +130,12 @@ function onSignUp ({email, password}) {
       >
         <div class="col">
           <q-input
-            ref="idForm"
-            v-model="id"
-            name="id"
-            label="ID"
+            ref="userIdForm"
+            v-model="userId"
+            name="userId"
+            label="E-mail (ID)"
             color="red"
+            suffix="@power.rd"
             :rules="[(val) => !!val || '필수입력입니다.']"
           >
             <template #prepend>
@@ -141,8 +146,9 @@ function onSignUp ({email, password}) {
 
         <div class="col q-mt-md">
           <q-input
-            ref="passwordForm"
-            v-model="pwd"
+            ref="userPasswordForm"
+            v-model="userPassword"
+            type="password"
             label="PASSWORD"
             color="red"
             :rules="[(val) => !!val || '필수입력입니다.']"
@@ -166,17 +172,18 @@ function onSignUp ({email, password}) {
           href="#"
           class="float-right q-mt-md q-mr-lg"
           style="text-decoration: none"
-          @click.stop.prevent="onJoinMember"
+          @click.stop.prevent="isShowSignUpPopUp = true"
         >
           Sign Up
         </a>
       </div>
     </div>
 
+    <!--Sign-up popup-->
     <sign-up-pop-up
-      :show="showpopup"
-      @close="showpopup = false"
-      @applySignUp="onSignUp"
+      :show="isShowSignUpPopUp"
+      @close="isShowSignUpPopUp = false"
+      @applySignUp="onApplySignUp"
     />
   </q-page>
 </template>
