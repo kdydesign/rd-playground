@@ -11,7 +11,7 @@ const drawerRight = ref(false)
 </script>
 
 <template>
-  <q-header class="bg-white text-black">
+  <q-header class="rd-header">
     <q-toolbar
       class="justify-center"
       style="border-bottom: 1px solid #efefef; height: 70px"
@@ -42,6 +42,8 @@ const drawerRight = ref(false)
 </template>
 
 <style lang="sass">
+.rd-header
+  background: linear-gradient(314deg, #b71c1c 4.67%, #760000 95.33%)
 .navBack
   position: absolute
   left: 10px
