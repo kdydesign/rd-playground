@@ -134,7 +134,7 @@ function onClosePopUp () {
             round
             label="reg"
             color="white"
-            class="r-btn"
+            class="r-btn r-ani-pulse"
             @click="onRegistration"
           />
 
@@ -223,7 +223,7 @@ function onClosePopUp () {
 
 .status-table
   thead
-    background: linear-gradient(314deg, #ED0000 4.5%, #B10000 95.5%) !important
+    background: #ab0000
     border-radius: 10px
 
 .status-table
@@ -258,5 +258,8 @@ function onClosePopUp () {
   font-weight: 600
   color: #b90000
   font-size: 20px
+
+.r-ani-pulse
+  animation: pulse-red 2s infinite
 
 </style>
