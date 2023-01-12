@@ -65,8 +65,10 @@ function onCloseSignUpPopUp () {
   <q-dialog
     v-model="show"
     persistent
+    position="bottom"
+    :class="['rd-signup-popup', {'p-show': show}]"
   >
-    <q-card style="min-width: 350px">
+    <q-card class="content-card">
       <q-card-section>
         <div class="text-h6">
           Sign Up
@@ -80,7 +82,7 @@ function onCloseSignUpPopUp () {
           v-model="userId"
           outlined
           dense
-          color="red"
+          color="grey-8"
           suffix="@power.rd"
           :rules="[
             (val) => !!val || '필수입력입니다.',
@@ -98,7 +100,7 @@ function onCloseSignUpPopUp () {
           type="password"
           outlined
           dense
-          color="red"
+          color="grey-8"
           :rules="[
             (val) => !!val || '필수입력입니다.',
             (val) => val.length >= 6 || '최소 6자리이상입니다.'
@@ -114,7 +116,7 @@ function onCloseSignUpPopUp () {
           type="password"
           outlined
           dense
-          color="red"
+          color="grey-8"
           :rules="[
             (val) => !!val || '필수입력입니다.',
             (val) => val === userPassword || '입력한 비밀번호가 다릅니다.'
@@ -129,6 +131,7 @@ function onCloseSignUpPopUp () {
         <q-btn
           flat
           label="Cancel"
+          color="black"
           @click="onCloseSignUpPopUp"
         />
 
@@ -141,3 +144,21 @@ function onCloseSignUpPopUp () {
     </q-card>
   </q-dialog>
 </template>
+
+<style lang="sass">
+.rd-signup-popup
+  transition: backdrop-filter 0.2s
+  backdrop-filter: blur(3px) opacity(0)
+  &.p-show
+    backdrop-filter: blur(3px)
+  .content-card
+    min-width: 350px
+    border-radius: 20px 20px 0px 0px !important
+    transition: 2s -webkit-filter linear
+  .q-card__section
+    padding-bottom: 0px
+
+
+.input-require
+  color: $red-10
+</style>
