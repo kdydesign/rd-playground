@@ -82,18 +82,19 @@ async function onSignUpConfirm () {
       class="page-a-padding full-width justify-center flex"
     >
       <div
-        class="q-mx-auto column q-pl-md q-pr-md q-mt-md"
+        class="q-mx-auto q-pl-md q-pr-md q-mt-md"
         style="width: 500px"
       >
-        <div class="col q-gutter-y-xs">
+        <div class="col q-gutter-y-xs rd-ingame-pannel">
           <div>
             <span class="input-title">UID <span class="input-require">*</span></span>
             <q-input
               ref="uidField"
-              v-model="uid"
+              v-model.number="uid"
+              type="number"
               outlined
               dense
-              color="red"
+              color="grey-8"
               :rules="[(val) => !!val || '필수입력입니다.']"
             />
           </div>
@@ -105,7 +106,7 @@ async function onSignUpConfirm () {
               v-model="name"
               outlined
               dense
-              color="red"
+              color="grey-8"
               :rules="[(val) => !!val || '필수입력입니다.']"
             />
           </div>
@@ -113,10 +114,11 @@ async function onSignUpConfirm () {
           <div>
             <span class="input-title">Power</span>
             <q-input
-              v-model="power"
+              v-model.number="power"
+              type="number"
               outlined
               dense
-              color="red-10"
+              color="grey-8"
               style="margin-bottom: 20px"
             />
           </div>
@@ -140,7 +142,7 @@ async function onSignUpConfirm () {
             />
           </div>
 
-          <div class="q-mt-lg float-right">
+          <div class="q-mt-lg rd-ingame-btn">
             <q-btn
               label="Confirm"
               color="red-10"
@@ -162,4 +164,14 @@ async function onSignUpConfirm () {
 
 .alliance-btn
   border: 1px solid $red-10
+
+.rd-ingame-pannel
+  background: #fff
+  border-radius: 10px
+  padding: 10px
+  box-shadow: 0px 10px 11px 0px #c9c8c8c2
+
+.rd-ingame-btn
+  display: flex
+  flex-direction: row-reverse
 </style>
