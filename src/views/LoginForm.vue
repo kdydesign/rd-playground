@@ -66,9 +66,9 @@ async function onLogin () {
 
       if (userInfo || isSuperUser) {
         await setUserInfo(userInfo, user.uid)
-        await router.push({ path: '/OsirisReg' })
+        await router.replace({ path: '/OsirisReg' })
       } else {
-        await router.push({ path: '/SignUp' })
+        await router.replace({ path: '/SignUp' })
       }
     }
 
@@ -119,9 +119,17 @@ async function onApplySignUp ({ userId: signUpID, userPassword: signUpPwd }) {
 </script>
 
 <template>
-  <q-page class="page-a-padding full-width content-center justify-center flex">
+  <q-page class="column page-a-padding full-width content-center justify-center flex">
+    <div class="rd-logo-box">
+      <span
+        class="row rd-logo"
+      >
+        R46D
+      </span>
+      <span class="row rd-sub-logo">Osiris Support App</span>
+    </div>
     <div
-      class="q-mx-auto column"
+      class="q-mx-auto row column login-box q-mt-lg"
       style="width: 76vw"
     >
       <div
@@ -133,8 +141,8 @@ async function onApplySignUp ({ userId: signUpID, userPassword: signUpPwd }) {
             ref="userIdForm"
             v-model="userId"
             name="userId"
+            color="grey-8"
             label="E-mail (ID)"
-            color="red"
             suffix="@power.rd"
             :rules="[(val) => !!val || '필수입력입니다.']"
           >
@@ -144,13 +152,13 @@ async function onApplySignUp ({ userId: signUpID, userPassword: signUpPwd }) {
           </q-input>
         </div>
 
-        <div class="col q-mt-md">
+        <div class="col q-mt-xs">
           <q-input
             ref="userPasswordForm"
             v-model="userPassword"
             type="password"
+            color="grey-8"
             label="PASSWORD"
-            color="red"
             :rules="[(val) => !!val || '필수입력입니다.']"
           >
             <template #prepend>
@@ -160,18 +168,18 @@ async function onApplySignUp ({ userId: signUpID, userPassword: signUpPwd }) {
         </div>
       </div>
 
-      <div class="col q-mt-xl">
+      <div class="col q-mt-md">
         <q-btn
           rounded
           label="LOGIN"
-          color="red"
+          color="white"
           class="r-btn fit"
           @click="onLogin"
         />
         <a
           href="#"
           class="float-right q-mt-md q-mr-lg"
-          style="text-decoration: none"
+          style="text-decoration: none;color: black"
           @click.stop.prevent="isShowSignUpPopUp = true"
         >
           Sign Up
@@ -196,5 +204,24 @@ async function onApplySignUp ({ userId: signUpID, userPassword: signUpPwd }) {
   height: 50px !important
 
 .login-box
-  width: 400px
+  background: #fff
+  border-radius: 10px
+  padding: 14px
+  box-shadow: 0px 13px 15px 2px #280000a1
+
+.rd-logo
+  font-size: 80px
+  font-weight: 700
+  color: #ffffff
+  text-shadow: 0px 7px 10px #0000006e
+
+.rd-logo-box
+  display: flex
+  justify-content: center
+  align-items: center
+  flex-direction: column
+
+.rd-sub-logo
+  font-size: 16px
+  color: #d5d5d5
 </style>
