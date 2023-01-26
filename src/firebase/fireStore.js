@@ -56,7 +56,7 @@ export async function getOsirisRegCnt (key) {
 export async function setRegOsiris (key, userUID, userInfo) {
   try {
     const regRef = doc(db, `rd-reg-osiris/${key}/applicants-list`, userUID)
-    const userRegRef = doc(db, `rd-user-reg-osiris`, userUID)
+    const userRegRef = doc(db, 'rd-user-reg-osiris', userUID)
     await setDoc(regRef, {
       ...userInfo,
       timestamp: moment(serverTimestamp()).format('YYYY-MM-DD')
@@ -67,6 +67,22 @@ export async function setRegOsiris (key, userUID, userInfo) {
     })
   } catch (err) {
     console.log('[setRegOsiris]: ', err)
+  }
+}
+
+// Osiris 등록 조회
+export async function getRegOsiris (userUID) {
+  try {
+    const docRef = doc(db, 'rd-user-reg-osiris', userUID)
+    const docSnap = await getDoc(docRef)
+
+    if (docSnap.exists()) {
+      return docSnap.data()
+    } else {
+      return void 0
+    }
+  } catch (err) {
+    console.log('[getRegOsiris]: ', err)
   }
 }
 
