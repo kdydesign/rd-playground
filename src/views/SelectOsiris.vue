@@ -125,6 +125,17 @@ function getShowRegBtn (key) {
     return alli !== key
   }
 
+  return true
+
+}
+
+function getDisableRegBtn (key) {
+  if (userRegInfo.value) {
+    const alli = userRegInfo.value.alliance
+
+    return alli !== key
+  }
+
   return false
 
 }
@@ -161,7 +172,7 @@ function getShowRegBtn (key) {
             <q-card-actions align="right">
               <q-btn
                 v-if="getShowRegBtn(reg.key)"
-                :disable="getShowRegBtn(reg.key)"
+                :disable="getDisableRegBtn(reg.key)"
                 flat
                 @click="onRegistration(reg.key)"
               >
