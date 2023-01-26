@@ -120,9 +120,9 @@ function getSectionClass (key) {
 
 function getShowRegBtn (key) {
   if (userRegInfo.value) {
-    const alli = userRegInfo.value.alliance
+    const regOsirisAlli = userRegInfo.value.regOsirisAlli
 
-    return alli !== key
+    return regOsirisAlli !== key
   }
 
   return true
@@ -131,9 +131,9 @@ function getShowRegBtn (key) {
 
 function getDisableRegBtn (key) {
   if (userRegInfo.value) {
-    const alli = userRegInfo.value.alliance
+    const regOsirisAlli = userRegInfo.value.regOsirisAlli
 
-    return alli !== key
+    return regOsirisAlli !== key
   }
 
   return false
