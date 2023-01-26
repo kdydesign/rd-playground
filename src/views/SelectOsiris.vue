@@ -1,6 +1,6 @@
 <script setup>
 import { inject, onBeforeMount, reactive, ref } from 'vue'
-import { setRegOsiris, getOsirisRegCnt } from '@/firebase/fireStore'
+import { setRegOsiris, getOsirisRegCnt, getRegOsiris } from '@/firebase/fireStore'
 
 // inject global component
 const $loader = inject('$loader')
@@ -38,6 +38,7 @@ const regArr = reactive([
     numPeopleCnt: ydRegCnt
   }
 ])
+const userRegInfo = ref(void 0)
 
 /**
  * life cycle
@@ -50,6 +51,9 @@ onBeforeMount(async () => {
     await getOsirisRegCnt('pd'),
     await getOsirisRegCnt('yd')
   ])
+
+  userRegInfo.value = await getRegOsiris(userUID)
+  console.log(userRegInfo)
 
   rdRegCnt.value = rdCnt
   pdRegCnt.value = pdCnt
