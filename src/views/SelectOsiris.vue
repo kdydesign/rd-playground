@@ -161,7 +161,7 @@ function getShowRegBtn (key) {
             <q-card-actions align="right">
               <q-btn
                 v-if="getShowRegBtn(reg.key)"
-                :disable="!getShowRegBtn(reg.key)"
+                :disable="getShowRegBtn(reg.key)"
                 flat
                 @click="onRegistration(reg.key)"
               >
