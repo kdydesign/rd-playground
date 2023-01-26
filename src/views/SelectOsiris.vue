@@ -1,6 +1,6 @@
 <script setup>
 import { inject, onBeforeMount, reactive, ref } from 'vue'
-import { setRegOsiris, getOsirisRegCnt, getRegOsiris } from '@/firebase/fireStore'
+import { setRegOsiris, getOsirisRegCnt, getRegOsiris, deleteRegOsiris } from '@/firebase/fireStore'
 
 // inject global component
 const $loader = inject('$loader')
@@ -96,6 +96,14 @@ async function onRegistration (key) {
   }
 }
 
+async function onCancelRegistration(key) {
+  $loader.show()
+
+  await deleteRegOsiris(key, userUID)
+
+  $loader.hide()
+}
+
 function getSectionClass (key) {
   return `rd-select-${key} text-white`
 }
@@ -104,11 +112,11 @@ function getShowRegBtn (key) {
   if (userRegInfo.value) {
     const alli = userRegInfo.value.alliance
 
-    return alli !== key  
+    return alli !== key
   }
-  
+
   return true
-  
+
 }
 </script>
 <template>
@@ -152,7 +160,7 @@ function getShowRegBtn (key) {
               <q-btn
                 v-else
                 flat
-                @click="onRegistration(reg.key)"
+                @click="onCancelRegistration(reg.key)"
               >
                 취소
               </q-btn>
