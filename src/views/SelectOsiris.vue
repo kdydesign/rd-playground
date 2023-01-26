@@ -125,7 +125,7 @@ function getShowRegBtn (key) {
     return alli !== key
   }
 
-  return true
+  return false
 
 }
 </script>
