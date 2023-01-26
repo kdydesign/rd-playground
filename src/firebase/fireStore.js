@@ -3,6 +3,7 @@ import {
   collection,
   doc,
   getDoc,
+  deleteDoc,
   getCountFromServer, setDoc, serverTimestamp, getDocs
 } from 'firebase/firestore'
 import firebaseApp from '@/firebase/index'
@@ -83,6 +84,18 @@ export async function getRegOsiris (userUID) {
     }
   } catch (err) {
     console.log('[getRegOsiris]: ', err)
+  }
+}
+
+// Osiris 등록 취소
+export async function deleteRegOsiris (key, userUID) {
+  try {
+    const regRef = doc(db, `rd-reg-osiris/${key}/applicants-list`, userUID)
+    const userRegRef = doc(db, 'rd-user-reg-osiris', userUID)
+    await deleteDoc(regRef)
+    await deleteDoc(userRegRef)
+  } catch (err) {
+    console.log('[deleteRegOsiris]: ', err)
   }
 }
 
