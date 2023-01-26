@@ -53,7 +53,6 @@ onBeforeMount(async () => {
   ])
 
   userRegInfo.value = await getRegOsiris(userUID)
-  console.log(userRegInfo)
 
   rdRegCnt.value = rdCnt
   pdRegCnt.value = pdCnt
@@ -102,6 +101,7 @@ function getSectionClass (key) {
 }
 
 function getShowRegBtn (key) {
+  console.log(userRegInfo.value)
   const alli = userRegInfo.value.alliance
 
   return alli !== key
