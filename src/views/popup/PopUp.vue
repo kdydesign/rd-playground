@@ -1,6 +1,7 @@
 <script setup>
 import { toRefs, defineProps, ref, watch, computed, defineEmits, inject } from 'vue'
 import { getOsirisRegList } from '@/firebase/fireStore'
+import { map } from 'lodash-es'
 
 // inject global component
 const $loader = inject('$loader')
