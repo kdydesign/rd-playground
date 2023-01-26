@@ -59,7 +59,12 @@ const columns = [
 
 // 지원 목록 조회
 const getDataList = computed(() => {
-  return localDataList.value
+  return map(localDataList.value, (a, i) => {
+    return {
+      seq: (i + 1),
+      ...a
+    }
+  })
 })
 
 function onResize (size) {
