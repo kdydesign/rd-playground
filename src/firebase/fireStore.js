@@ -55,8 +55,13 @@ export async function getOsirisRegCnt (key) {
 // osiris 등록
 export async function setRegOsiris (key, userUID, userInfo) {
   try {
-    const docRef = doc(db, `rd-reg-osiris/${key}/applicants-list`, userUID)
-    await setDoc(docRef, {
+    const regRef = doc(db, `rd-reg-osiris/${key}/applicants-list`, userUID)
+    const userRegRef = doc(db, `rd-user-reg-osiris`, userUID)
+    await setDoc(regRef, {
+      ...userInfo,
+      timestamp: moment(serverTimestamp()).format('YYYY-MM-DD')
+    })
+    await setDoc(userRegRef, {
       ...userInfo,
       timestamp: moment(serverTimestamp()).format('YYYY-MM-DD')
     })
