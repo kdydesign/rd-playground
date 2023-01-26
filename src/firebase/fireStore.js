@@ -64,6 +64,7 @@ export async function setRegOsiris (key, userUID, userInfo) {
     })
     await setDoc(userRegRef, {
       ...userInfo,
+      regOsirisAlli: key,
       timestamp: moment(serverTimestamp()).format('YYYY-MM-DD')
     })
   } catch (err) {
