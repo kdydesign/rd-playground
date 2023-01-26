@@ -79,6 +79,7 @@ async function onRegistration (key) {
     alliance,
     uid
   })
+  await getRegOsirisList()
 
   $loader.hide()
 
