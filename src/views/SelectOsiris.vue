@@ -46,6 +46,16 @@ const userRegInfo = ref(void 0)
 onBeforeMount(async () => {
   $loader.show()
 
+  await getRegOsirisList()
+
+  $loader.hide()
+})
+
+/**
+ * methods
+ */
+
+async function getRegOsirisList () {
   const [rdCnt, pdCnt, ydCnt] = await Promise.all([
     await getOsirisRegCnt('rd'),
     await getOsirisRegCnt('pd'),
@@ -57,14 +67,7 @@ onBeforeMount(async () => {
   rdRegCnt.value = rdCnt
   pdRegCnt.value = pdCnt
   ydRegCnt.value = ydCnt
-
-
-  $loader.hide()
-})
-
-/**
- * methods
- */
+}
 
 // osiris registration
 async function onRegistration (key) {
@@ -100,8 +103,14 @@ async function onCancelRegistration(key) {
   $loader.show()
 
   await deleteRegOsiris(key, userUID)
+  await getRegOsirisList()
 
   $loader.hide()
+
+  $notify.show({
+    message: '신청이 취소되었습니다.',
+    type: 'positive'
+  })
 }
 
 function getSectionClass (key) {
