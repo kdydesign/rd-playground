@@ -100,7 +100,7 @@ async function onRegistration (key) {
   }
 }
 
-async function onCancelRegistration(key) {
+async function onCancelRegistration (key) {
   $loader.show()
 
   await deleteRegOsiris(key, userUID)
@@ -122,7 +122,7 @@ function getShowRegBtn (key) {
   if (userRegInfo.value) {
     const alli = userRegInfo.value.alliance
 
-    return alli !== key
+    return alli === key
   }
 
   return true
@@ -168,7 +168,7 @@ function getShowRegBtn (key) {
               </q-btn>
 
               <q-btn
-                v-else
+                v-if="getShowRegBtn(reg.key)"
                 flat
                 @click="onCancelRegistration(reg.key)"
               >
