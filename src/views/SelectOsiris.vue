@@ -101,10 +101,14 @@ function getSectionClass (key) {
 }
 
 function getShowRegBtn (key) {
-  console.log(userRegInfo.value)
-  const alli = userRegInfo.value.alliance
+  if (userRegInfo.value) {
+    const alli = userRegInfo.value.alliance
 
-  return alli !== key
+    return alli !== key  
+  }
+  
+  return true
+  
 }
 </script>
 <template>
