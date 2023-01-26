@@ -100,6 +100,12 @@ async function onRegistration (key) {
 function getSectionClass (key) {
   return `rd-select-${key} text-white`
 }
+
+function getShowRegBtn (key) {
+  const alli = userRegInfo.value.alliance
+
+  return alli !== key
+}
 </script>
 <template>
   <div>
@@ -132,10 +138,19 @@ function getSectionClass (key) {
 
             <q-card-actions align="right">
               <q-btn
+                v-if="getShowRegBtn(reg.key)"
                 flat
                 @click="onRegistration(reg.key)"
               >
                 신청
+              </q-btn>
+
+              <q-btn
+                v-else
+                flat
+                @click="onRegistration(reg.key)"
+              >
+                취소
               </q-btn>
             </q-card-actions>
           </q-card>
