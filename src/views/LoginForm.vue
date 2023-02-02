@@ -66,7 +66,7 @@ async function onLogin () {
 
       if (userInfo || isSuperUser) {
         await setUserInfo(userInfo, user.uid)
-        await router.replace({ path: '/OsirisReg' })
+        await router.replace({ path: '/OsirisMgmt' })
       } else {
         await router.replace({ path: '/SignUp' })
       }
